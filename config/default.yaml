@@ -1,0 +1,25 @@
+model_root: /storage/LLMs
+host: 127.0.0.1
+port: '8000'
+url_prefix: /v1
+debug_mode: true
+use_gpu: true
+models:
+  mistral: mistral
+  llama2: llama2
+  phi-2: phi-2
+model_config:
+  hf_id: ''
+  hf_file: ''
+  n_threads: 2
+  n_batch: 512
+  n_gpu_layers: -1
+  n_ctx: 1024,
+  system_prompt: true
+  verbose: true
+  default_completion_config:
+    max_tokens: 1024
+    temperature: 0.0
+    repeat_penalty: 1.1
+    echo: true
+    top_p: 1

@@ -1,0 +1,15 @@
+model_config:
+  hf_id: 'TheBloke/Mistral-7B-Instruct-v0.2-GGUF'
+  hf_file: 'mistral-7b-instruct-v0.2.Q5_K_M.gguf'
+  n_threads: 2
+  n_batch: 512
+  n_gpu_layers: 0
+  n_ctx: 8196
+  system_prompt: false
+  verbose: true
+  default_completion_config:
+    max_tokens: 8196
+    temperature: 0.0
+    repeat_penalty: 1.1
+    echo: true
+    top_p: 1
