@@ -18,14 +18,12 @@ class LLM:
                 config = ConfigLoader().get()
                 model_config = config['model_config']
                 debug_mode = config['debug_mode']
-
-                n_gpu_layers = (n_gpu_layers if config['use_gpu'] else 0)
                 
                 hf_id = model_config['hf_id']
                 hf_file = model_config['hf_file']
                 n_threads = model_config['n_threads']
                 n_batch = model_config['n_batch']
-                n_gpu_layers = model_config['n_gpu_layers']
+                n_gpu_layers = (model_config['n_gpu_layers'] if config['use_gpu'] else 0)
                 n_ctx = model_config['n_ctx']
                 system_prompt = model_config['system_prompt']
                 verbose = model_config['verbose']

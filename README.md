@@ -41,6 +41,7 @@ This application is a local server that emulates the OpenAI completion API, allo
 
 ### Making Requests
 The server uses the same request and response format as the OpenAI completion API. Here's an example using `curl`:
+1. **Linux**
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
@@ -54,6 +55,11 @@ curl -X POST \
         ]
       }' \
   "http://localhost:8000/v1/chat/completions"
+```
+
+2. **Windows** (Require Windows 10/11 or install [**cURL for Windows**](https://curl.se/windows/))
+```
+curl -X POST -H "Content-Type: application/json" -H "User-Agent: insomnia/8.6.1" -d "{\"messages\": [{\"role\": \"user\", \"content\": \"When is the day longest daytime among the year?\"}]}" "http://localhost:8000/v1/chat/completions"
 ```
 
 ## Configuration
