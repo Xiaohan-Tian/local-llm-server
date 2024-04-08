@@ -18,7 +18,7 @@ class MistralCommunicator(LLMCommunicator):
         )
     
     
-    def complete(self, prompt, max_tokens=8196, temperature=0.0, repeat_penalty=1.1, stop='', echo=True):
+    def _full_complete(self, prompt, max_tokens=8196, temperature=0.0, repeat_penalty=1.1, stop='', echo=True):
         if self._verbose: 
             print(f"prompt\t\t= {prompt}")
             print(f"stop\t\t= '{stop}'")
@@ -29,19 +29,38 @@ class MistralCommunicator(LLMCommunicator):
             temperature=temperature,
             repeat_penalty=repeat_penalty,
             stop = [] if stop == "" else [stop], # Dynamic stopping when such token is detected.
-            echo=True # return the prompt
+            echo=echo # return the prompt
         )
         
         response_text = response.get("choices", [{}])[0].get("text", "")
         response_text = response_text.strip()  # Trim the response_text
 
-        if response_text.startswith(prompt):
-            response_text = response_text[len(prompt):].strip()  # Remove prompt and strip any leading/trailing whitespace
+        # if response_text.startswith(prompt):
+        #     response_text = response_text[len(prompt):].strip()  # Remove prompt and strip any leading/trailing whitespace
         
         if self._verbose: 
             print(f"response\t= {response_text}")
             
         return response_text
+    
+    
+    def _stream_complete(self, prompt, max_tokens=8196, temperature=0.0, repeat_penalty=1.1, stop='', echo=True):
+        if self._verbose: 
+            print(f"streaming mode")
+            print(f"prompt\t\t= {prompt}")
+            print(f"stop\t\t= '{stop}'")
+        
+        response_stream = self._llm.create_completion(
+            prompt=prompt,
+            max_tokens=self._n_ctx,
+            temperature=temperature,
+            repeat_penalty=repeat_penalty,
+            stop = [] if stop == "" else [stop], # Dynamic stopping when such token is detected.
+            echo=echo, # return the prompt,
+            stream=True # stream the response
+        )
+        
+        return response_stream
     
     
     def get_prompt(self, messages):

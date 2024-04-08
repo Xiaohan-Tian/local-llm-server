@@ -11,5 +11,5 @@ model_config:
     max_tokens: 8196
     temperature: 0.0
     repeat_penalty: 1.1
-    echo: true
+    echo: false
     top_p: 1

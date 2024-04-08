@@ -18,7 +18,7 @@ This application is a local server that emulates the OpenAI completion API, allo
 ### Steps
 1. **Install `llama-cpp-python`:**
    ```bash
-   CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python==0.2.42 --force-reinstall --upgrade --no-cache-dir --verbose
+   CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python==0.2.57 --force-reinstall --upgrade --no-cache-dir --verbose
    ```
    For detailed installation instructions, please refer to the [**llama-cpp-python**](https://github.com/abetlen/llama-cpp-python) project page.
 2. **Install Other Dependencies:**
