@@ -50,7 +50,7 @@ curl -X POST \
         "messages": [
             {
                 "role": "user",
-                "content": "When is the day longest daytime among the year?"
+                "content": "When is the day with the longest daylight of the year?"
             }
         ]
       }' \
@@ -59,7 +59,7 @@ curl -X POST \
 
 2. **Windows** (Require Windows 10/11 or install [**cURL for Windows**](https://curl.se/windows/))
 ```
-curl -X POST -H "Content-Type: application/json" -H "User-Agent: insomnia/8.6.1" -d "{\"messages\": [{\"role\": \"user\", \"content\": \"When is the day longest daytime among the year?\"}]}" "http://localhost:8000/v1/chat/completions"
+curl -X POST -H "Content-Type: application/json" -H "User-Agent: insomnia/8.6.1" -d "{\"messages\": [{\"role\": \"user\", \"content\": \"When is the day with the longest daylight of the year?\"}]}" "http://localhost:8000/v1/chat/completions"
 ```
 
 ## Configuration
