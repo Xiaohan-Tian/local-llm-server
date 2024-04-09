@@ -17,9 +17,42 @@ This application is a local server that emulates the OpenAI completion API, allo
 
 ### Steps
 1. **Install `llama-cpp-python`:**
+    
+    a. Linux
+    ```bash
+    CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python==0.2.57 --force-reinstall --upgrade --no-cache-dir --verbose
+    ```
+    b. macOS
+    - Make sure you have XCode installed (Please install the full version via AppStore, not only the command-line tools)
+    - Install `conda` via miniforge3
    ```bash
-   CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python==0.2.57 --force-reinstall --upgrade --no-cache-dir --verbose
-   ```
+    curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+    bash Miniforge3-$(uname)-$(uname -m).sh
+    ```
+    - for Intel CPU w/AMD GPU based macOS:
+    ```bash
+    pip uninstall llama-cpp-python -y
+    CMAKE_ARGS="-DLLAMA_METAL=on" pip install -U llama-cpp-python==0.2.57 --no-cache-dir
+    ```
+    - for Apple Silicon based macOS:
+    ```bash
+    pip uninstall llama-cpp-python==0.2.57 -y
+    CMAKE_ARGS="-DLLAMA_METAL_EMBED_LIBRARY=ON -DLLAMA_METAL=on" pip install -U llama-cpp-python --no-cache-dir
+    ```
+    c. Windows
+    - Install [**Visual Studio**](https://visualstudio.microsoft.com/vs/community/).
+    - Install [**CUDA Toolkits**](https://developer.nvidia.com/cuda-downloads), please make sure the CUDA Toolkits version you are trying to install can match the CUDA version display in the `nvidia-smi` command's result, or just let the CUDA Toolkits installer to override your existing NVIDIA driver.
+    - Install `llama-cpp-python`:
+    ```
+    set CMAKE_ARGS=-DLLAMA_CUBLAS=on
+    set FORCE_CMAKE=1
+
+    echo %CMAKE_ARGS%
+    echo %FORCE_CMAKE%
+
+    pip install llama-cpp-python==0.2.57 --force-reinstall --upgrade --no-cache-dir --verbose
+    ```
+
    For detailed installation instructions, please refer to the [**llama-cpp-python**](https://github.com/abetlen/llama-cpp-python) project page.
 2. **Install Other Dependencies:**
     ```bash
