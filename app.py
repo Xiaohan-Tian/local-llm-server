@@ -6,7 +6,7 @@ from flask import Flask
 
 from util.ConfigLoader import ConfigLoader
 from loader.HFLoader import load_model
-from llm.LLM import LLM
+from communicator.LLMCommunicator import LLMCommunicator
 
 from routes.route_hi import route_hi
 from routes.route_completions import route_completions
@@ -34,7 +34,7 @@ def start_server(model=os.getenv('MODEL')):
     
     # initiate LLM
     print(f"=== ===  === ===  === ===\t\t INIT LLM \t\t=== ===  === ===  === ===")
-    LLM.get()
+    LLMCommunicator.get()
     
     # start the server
     print(f"=== ===  === ===  === ===\t\t SERVER STARTED \t\t=== ===  === ===  === ===")

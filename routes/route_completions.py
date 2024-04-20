@@ -4,7 +4,7 @@ import json
 from flask import Blueprint, Response, jsonify, request, stream_with_context
 
 from util.ConfigLoader import ConfigLoader
-from llm.LLM import LLM
+from communicator.LLMCommunicator import LLMCommunicator
 
 route_completions = Blueprint('route_completions', __name__)
 
@@ -15,7 +15,7 @@ def complete_completions(messages, max_tokens, temperature, repeat_penalty, echo
     default_completion_config = model_config['default_completion_config']
     debug_mode = config['debug_mode']
     
-    llm = LLM.get()
+    llm = LLMCommunicator.get()
     
     text = llm.complete_messages(
         messages, 
@@ -57,7 +57,7 @@ def stream_completions(messages, max_tokens, temperature, repeat_penalty, echo):
     if debug_mode:
         print(f"stream_batch_size \t = {stream_batch_size}")
     
-    llm = LLM.get()
+    llm = LLMCommunicator.get()
     
     response_stream = llm.complete_messages(
         messages, 
@@ -173,7 +173,7 @@ def completions():
     if not messages:
         return jsonify({'error': 'No messages provided'}), 400
     
-    llm = LLM.get()
+    llm = LLMCommunicator.get()
     
     if stream_mode:
         res = stream_completions(

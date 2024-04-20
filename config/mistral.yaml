@@ -6,6 +6,18 @@ model_config:
   n_gpu_layers: -1
   n_ctx: 8196
   system_prompt: false
+  system_prompt_start_token: '<s>[INST] '
+  system_prompt_end_token: ' [/INST]'
+  user_prompt_start_token: '<s>[INST] '
+  user_prompt_end_token: ' [/INST]'
+  user_followup_prompt_start_token: '[INST] '
+  user_followup_prompt_end_token: ' [/INST]'
+  assistant_prompt_start_token: ' '
+  assistant_prompt_end_token: ' </s>'
+  assistant_followup_prompt_start_token: ' '
+  assistant_followup_prompt_end_token: ''
+  end_tokens: 
+    - '</s>'
   verbose: true
   default_completion_config:
     max_tokens: 8196
