@@ -1,7 +1,6 @@
 import threading
 
 from communicator.LLMCommunicator import LLMCommunicator
-from communicator.MistralCommunicator import MistralCommunicator
 
 from util.ConfigLoader import ConfigLoader
 
@@ -41,7 +40,7 @@ class LLM:
                     print(f"verbose \t\t = {verbose}")
                     print(f"target_model_path \t = {target_model_path}")
                     
-                LLM._instance = MistralCommunicator(
+                LLM._instance = LLMCommunicator(
                     model_path=target_model_path,
                     n_threads=n_threads,
                     n_batch=n_batch,
