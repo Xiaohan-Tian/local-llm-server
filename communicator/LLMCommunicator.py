@@ -130,28 +130,55 @@ class LLMCommunicator:
     def get_prompt(self, messages):
         prompt = ''
         
+        if len(messages) < 1:
+            raise "messages list is empty"
+            
+        current_message = messages[0]
+        current_role = current_message.get('role', 'user')
+        current_content = current_message.get('content', '').strip()
+        
+        if self.system_prompt and current_role != "system":
+            messages.insert(0, {
+                "role": "system", 
+                "content": ""
+            })
+            
+        # print(messages)
+        
+        is_first_user_prompt = True
+        is_first_assistant_prompt = True
+        
         for i in range(len(messages)):
             current_message = messages[i]
+            # print(current_message)
             current_role = current_message.get('role', 'user')
-            current_content = current_message.get('content', '')
+            current_content = current_message.get('content', '').strip()
             
-            if current_role == 'user':
-                current_role = 'user'
-            elif current_role == 'assistant':
-                current_role = 'assistant'
-            else:
-                continue
-            
-            if i <= 1:
-                if current_role == 'user':
+            if current_role == 'system':
+                if i == 0:
                     prompt += f"{self.system_prompt_start_token}{current_content}{self.system_prompt_end_token}"
                 else:
-                    prompt += f"{self.assistant_prompt_start_token}{current_content}{self.assistant_prompt_end_token}"
-            else:
-                if current_role == 'user':
+                    raise "system prompt can only be set at the beginning"
+                    
+                # print(f"(seen: system) prompt = {prompt}")
+            elif current_role == 'user':
+                if is_first_user_prompt:
+                    prompt += f"{self.user_prompt_start_token}{current_content}{self.user_prompt_end_token}"
+                    is_first_user_prompt = False
+                else:
                     prompt += f"{self.user_followup_prompt_start_token}{current_content}{self.user_followup_prompt_end_token}"
+                    
+                # print(f"(seen: user) prompt = {prompt}")
+            elif current_role == 'assistant':
+                if is_first_assistant_prompt:
+                    prompt += f"{self.assistant_prompt_start_token}{current_content}{self.assistant_prompt_end_token}"
+                    is_first_assistant_prompt = False
                 else:
                     prompt += f"{self.assistant_followup_prompt_start_token}{current_content}{self.assistant_followup_prompt_end_token}"
+                    
+                # print(f"(seen: assistant) prompt = {prompt}")
+            else:
+                raise f"unknow role: {current_role}"
                     
         return prompt
 
