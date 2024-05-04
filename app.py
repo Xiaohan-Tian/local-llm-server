@@ -2,14 +2,14 @@ import os
 import json
 import yaml
 import argparse
-from flask import Flask
+from fastapi import FastAPI
 
 from util.ConfigLoader import ConfigLoader
 from loader.HFLoader import load_model
 from communicator.LLMCommunicator import LLMCommunicator
 
-from routes.route_hi import route_hi
-from routes.route_completions import route_completions
+from routes.route_hi import router as route_hi_router
+from routes.route_completions import router as route_completions_router
 
 
 # wrapper logic for WSGI
@@ -39,9 +39,9 @@ def start_server(model=os.getenv('MODEL')):
     # start the server
     print(f"=== ===  === ===  === ===\t\t SERVER STARTED \t\t=== ===  === ===  === ===")
     
-    app = Flask(__name__)
-    app.register_blueprint(route_hi, url_prefix=config['url_prefix'])
-    app.register_blueprint(route_completions, url_prefix=config['url_prefix'])
+    app = FastAPI()
+    app.include_router(route_hi_router, prefix=config['url_prefix'])
+    app.include_router(route_completions_router, prefix=config['url_prefix'])
     
     return app
 
@@ -64,5 +64,6 @@ if __name__ == '__main__':
         config['use_gpu'] = (True if args.use_gpu == 1 else False)
     
     app = start_server(model=args.model)
-    app.run(debug=config['debug_mode'], use_reloader=False, host=config['host'], port=config['port'])
+    import uvicorn
+    uvicorn.run(app, host=config['host'], port=int(config['port']))
     

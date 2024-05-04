@@ -1,12 +1,13 @@
 import requests
 import time
 import json
-from flask import Blueprint, Response, jsonify, request, stream_with_context
+from fastapi import APIRouter, Request, HTTPException
+from fastapi.responses import StreamingResponse
 
 from util.ConfigLoader import ConfigLoader
 from communicator.LLMCommunicator import LLMCommunicator
 
-route_completions = Blueprint('route_completions', __name__)
+router = APIRouter()
 
 
 def complete_completions(messages, max_tokens, temperature, repeat_penalty, echo):
@@ -43,7 +44,7 @@ def complete_completions(messages, max_tokens, temperature, repeat_penalty, echo
             'finish_reason': 'stop'
         }]
     }
-    return jsonify(response)
+    return response
 
 
 def stream_completions(messages, max_tokens, temperature, repeat_penalty, echo):
@@ -138,11 +139,11 @@ def stream_completions(messages, max_tokens, temperature, repeat_penalty, echo):
         
         yield f"data: [DONE]\n\n"
         
-    return Response(stream_with_context(generate()), mimetype='text/event-stream')
+    return StreamingResponse(generate(), media_type="text/event-stream")
     
 
-@route_completions.route('/chat/completions', methods=['POST'])
-def completions():
+@router.post("/chat/completions")
+async def completions(request: Request):
     config = ConfigLoader().get()
     model_config = config['model_config']
     default_completion_config = model_config['default_completion_config']
@@ -154,7 +155,7 @@ def completions():
     default_echo = default_completion_config['echo']
     default_top_p = default_completion_config['top_p']
     
-    data = request.get_json()
+    data = await request.json()
     messages = data.get('messages', [])
     max_tokens = data.get('max_tokens', default_max_tokens)
     temperature = data.get('temperature', default_temperature)

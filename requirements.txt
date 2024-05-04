@@ -1,3 +1,5 @@
 huggingface_hub
-flask
-pyyaml
+pyyaml==6.0.1
+rich==13.7.1
+fastapi==0.103.2
+uvicorn==0.29.0
