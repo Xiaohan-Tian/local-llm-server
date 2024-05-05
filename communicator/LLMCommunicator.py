@@ -76,7 +76,7 @@ class LLMCommunicator:
     def _full_complete(self, prompt, max_tokens=8196, temperature=0.0, repeat_penalty=1.1, echo=True):
         stop = self.end_tokens
         
-        if self._verbose: 
+        if self._verbose and self._debug_mode: 
             print(f"prompt\t\t= {prompt}")
             print(f"stop\t\t= '{stop}'")
         
@@ -91,7 +91,7 @@ class LLMCommunicator:
         
         response_text = response.get("choices", [{}])[0].get("text", "").strip()
         
-        if self._verbose: 
+        if self._verbose and self._debug_mode: 
             print(f"response\t= {response_text}")
         
         return response_text
@@ -99,7 +99,7 @@ class LLMCommunicator:
     def _stream_complete(self, prompt, max_tokens=8196, temperature=0.0, repeat_penalty=1.1, echo=True):
         stop = self.end_tokens
         
-        if self._verbose: 
+        if self._verbose and self._debug_mode: 
             print(f"streaming mode")
             print(f"prompt\t\t= {prompt}")
             print(f"stop\t\t= '{stop}'")

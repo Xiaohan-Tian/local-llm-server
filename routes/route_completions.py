@@ -92,6 +92,7 @@ def stream_completions(messages, max_tokens, temperature, repeat_penalty, echo):
             chunk['finish_reason'] = "stop"
         
         chunk_json = json.dumps(chunk)
+        # print(f"!!! chunk_json = {chunk_json}")
         
         return f"data: {chunk_json}\n\n"
 

@@ -5,6 +5,10 @@ url_prefix: /v1
 debug_mode: true
 use_gpu: true
 stream_batch_size: 8
+llm_secret: 'NA'
+llm_base_url: 'NA'
+multiline: false
+show_log: false
 models:
   mistral: mistral
   llama2: llama2
