@@ -7,7 +7,11 @@ use_gpu: true
 stream_batch_size: 8
 llm_secret: 'NA'
 llm_base_url: 'NA'
+chatbot: false
 multiline: false
+gui: false
+gui_log: false
+share: false
 show_log: false
 models:
   mistral: mistral

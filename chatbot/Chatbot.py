@@ -1,4 +1,3 @@
-import openai
 import os
 import sys
 import json
@@ -8,11 +7,10 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.live import Live
 
-from openai import OpenAI
-
 from util.ConfigLoader import ConfigLoader
 from util.Loggers import print_centered, fill_row
 from util.Utilities import multi_line_input
+from communicator.LLMCommunicator import LLMCommunicator
 
 class Chatbot:
     _lock = threading.Lock()
@@ -25,10 +23,6 @@ class Chatbot:
             self.config = ConfigLoader().get()
             self.console = Console()
             self.messages = []
-            self.client = OpenAI(
-                api_key=self.config['llm_secret'],
-                base_url=f"http://127.0.0.1:{self.config['port']}/v1"
-            )
 
             # always print as soon as possible
             self.config['stream_batch_size'] = 1
@@ -39,15 +33,25 @@ class Chatbot:
     def complete(self, messages=[]):
         with Chatbot._lock:
             config = ConfigLoader().get()
+            model_config = config['model_config']
+            default_completion_config = model_config['default_completion_config']
+            llm = LLMCommunicator.get()
             stream_batch_size = config['stream_batch_size']
             context = ""
+            
+            default_max_tokens = default_completion_config['max_tokens']
+            default_temperature = default_completion_config['temperature']
+            default_repeat_penalty = default_completion_config['repeat_penalty']
+            default_echo = default_completion_config['echo']
 
             # Check if messages are provided and length is appropriate
-            res = self.client.chat.completions.create(
-                model='LOCAL-LLM-SERVER',
-                messages=messages,
-                stream=True, 
-                temperature=0.0
+            res = llm.complete_messages(
+                messages, 
+                max_tokens=default_max_tokens,
+                temperature=default_temperature,
+                repeat_penalty=default_repeat_penalty,
+                echo=default_echo,
+                stream=True
             )
 
             # stream mode
@@ -63,7 +67,7 @@ class Chatbot:
                     # yield get_response_json(prev_item.choices[0].delta.content)
 
                     # option 2: yield values in bulk
-                    bulk_text += prev_item.choices[0].delta.content
+                    bulk_text += prev_item['choices'][0]['text']
                     current_batch_size += 1
 
                     if current_batch_size == batch_size:
@@ -84,8 +88,7 @@ class Chatbot:
                     # print(f"token[END] = {item['choices'][0]['delta']['content']}")
 
                     # option 2: yield values in bulk
-                    if prev_item.choices[0].delta.content:
-                        bulk_text += prev_item.choices[0].delta.content
+                    bulk_text += prev_item['choices'][0]['text']
                     yield bulk_text
 
             return generate()

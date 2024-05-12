@@ -4,6 +4,7 @@ import json
 import yaml
 import argparse
 import threading
+import multiprocessing
 import uvicorn
 from fastapi import FastAPI
 
@@ -12,6 +13,7 @@ from util.Loggers import print_centered
 from loader.HFLoader import load_model
 from communicator.LLMCommunicator import LLMCommunicator
 from chatbot.Chatbot import Chatbot
+from gui.GUI import start_gradio
 
 from routes.route_hi import router as route_hi_router
 from routes.route_completions import router as route_completions_router
@@ -58,7 +60,7 @@ def start_server(model=os.getenv('MODEL')):
     return app
 
 def start_uvicorn():
-    if args.chatbot == 1 and config['show_log'] == 0:
+    if config['chatbot'] and config['show_log'] == 0:
         print("starting server...")
         log_config = uvicorn.config.LOGGING_CONFIG
         log_config['handlers']['default']['level'] = 'CRITICAL'
@@ -77,7 +79,9 @@ if __name__ == '__main__':
     
     parser.add_argument('--chatbot', required=False, type=int, default=0, help='Enable CLI Chatbot')
     parser.add_argument('--multiline', required=False, type=int, default=0, help='Allow multi-line input for commandline chatbot')
-    parser.add_argument('--show_log', required=False, type=int, default=0, help='show system logs in the Chatbot mode')
+    parser.add_argument('--gui', required=False, type=int, default=0, help='Enable Gradio UI')
+    parser.add_argument('--share', required=False, type=int, default=0, help='Generate a public accessible Gradio UI URL')
+    parser.add_argument('--show_log', required=False, type=int, default=0, help='show system logs in the Chatbot/GUI mode')
 
     args = parser.parse_args()    
 
@@ -92,22 +96,37 @@ if __name__ == '__main__':
     if args.use_gpu is not None:
         config['use_gpu'] = (True if args.use_gpu == 1 else False)
         
+    if args.chatbot is not None:
+        config['chatbot'] = (True if args.chatbot == 1 else False)
+        
     if args.multiline is not None:
         config['multiline'] = (True if args.multiline == 1 else False)
+        
+    if args.gui is not None:
+        config['gui'] = (True if args.gui == 1 else False)
+        
+    if args.share is not None:
+        config['share'] = (True if args.share == 1 else False)
         
     if args.show_log is not None:
         config['show_log'] = (True if args.show_log == 1 else False)
     
-    if args.chatbot == 0:
+    if not config['chatbot'] and not config['gui']:
         start_uvicorn()
     else:
         main_lock.acquire()
         
         server_thread = threading.Thread(target=start_uvicorn)
         server_thread.start()
+        
+    # perform local features
+    main_lock.acquire()
     
-    if args.chatbot == 1:
-        main_lock.acquire()
+    if config['gui']:
+        start_gradio(share=True)
+        print(f"=== ===  === ===  === ===\t\t GUI STARTED \t\t=== ===  === ===  === ===")
+    
+    if config['chatbot']:
         chatbot = Chatbot()
         chatbot.run()
-    
+
