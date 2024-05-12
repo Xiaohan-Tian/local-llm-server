@@ -3,12 +3,21 @@ import threading
 from llama_cpp import Llama
 
 from util.ConfigLoader import ConfigLoader
+from loader.HFLoader import load_model
 
 class LLMCommunicator:
     _lock = threading.Lock()
     _instance = None
     
     def __init__(self):
+        self.initialize()
+        
+    def initialize(self):
+        # load model
+        load_model()
+        
+        # initialize
+        print(f"=== ===  === ===  === ===\t\t INIT LLM \t\t=== ===  === ===  === ===")
         self.config = ConfigLoader().get()
         
         config = ConfigLoader().get()
@@ -72,6 +81,10 @@ class LLMCommunicator:
             n_gpu_layers=self._n_gpu_layers,
             n_ctx=self._n_ctx,
         )
+        
+    def offload_model(self):
+        del self._llm
+        self._llm = None
 
     def _full_complete(self, prompt, max_tokens=8196, temperature=0.0, repeat_penalty=1.1, echo=True):
         stop = self.end_tokens
@@ -193,3 +206,11 @@ class LLMCommunicator:
                 LLMCommunicator._instance.load_model()
                 
             return LLMCommunicator._instance
+        
+    @staticmethod
+    def pop():
+        with LLMCommunicator._lock:
+            if LLMCommunicator._instance is not None:
+                LLMCommunicator._instance.offload_model()
+                del LLMCommunicator._instance
+                LLMCommunicator._instance = None

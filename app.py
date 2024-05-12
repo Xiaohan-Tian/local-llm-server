@@ -4,7 +4,6 @@ import json
 import yaml
 import argparse
 import threading
-import multiprocessing
 import uvicorn
 from fastapi import FastAPI
 
@@ -24,27 +23,21 @@ main_lock = threading.Lock()
 # wrapper logic for WSGI
 # example: 
 # pip install gunicorn
-# ENV=test MODEL=mistral gunicorn --worker-class gthread --threads 4 --bind 127.0.0.1:8000 'app:start_server()'
+# ENV=test gunicorn --worker-class gthread --threads 4 --bind 127.0.0.1:8000 'app:start_server()'
 # NOTE: 
 # - avoid using Multi-Process worker in order to prevent multiple LLM instances.
 # - in an environment doesn't allow binding external external-accessible ports (e.g. Paperspace), bind "127.0.0.1" instead of "0.0.0.0"
-def start_server(model=os.getenv('MODEL')):
+def start_server():
     global main_lock
     
-    if model is None:
-        raise ValueError("model can't be empty")
-
-    config = ConfigLoader().load_config(model).get()
+    config = ConfigLoader().get()
+    config = ConfigLoader().load_config(config['model'], path='./llm_config/').get()
 
     formatted_json = json.dumps(config, indent=4)
     print(f"=== ===  === ===  === ===\t\t CONFIGURATIONS \t\t=== ===  === ===  === ===")
     print(formatted_json)
 
-    # load model
-    load_model()
-
     # initiate LLM
-    print(f"=== ===  === ===  === ===\t\t INIT LLM \t\t=== ===  === ===  === ===")
     LLMCommunicator.get()
 
     # start the server
@@ -66,13 +59,14 @@ def start_uvicorn():
         log_config['handlers']['default']['level'] = 'CRITICAL'
         config['debug_mode'] = False
         
-    app = start_server(model=args.model)
+    app = start_server()
     uvicorn.run(app, host=config['host'], port=int(config['port']))
         
 # local test server
 if __name__ == '__main__':
+    print('initializing...')
     parser = argparse.ArgumentParser(description='Process model parameter.')
-    parser.add_argument('--model', required=True, help='Model name to load configuration for')
+    parser.add_argument('--model', required=False, help='Model name to load configuration for')
     parser.add_argument('--host', required=False, help='The host which the server should use')
     parser.add_argument('--port', required=False, type=int, help='The port which the server should listen to')
     parser.add_argument('--use_gpu', required=False, type=int, help='Should use GPU')
@@ -87,6 +81,9 @@ if __name__ == '__main__':
 
     config = ConfigLoader().load_config(args.model).get()
 
+    if args.model is not None:
+        config['model'] = args.model
+    
     if args.host is not None:
         config['host'] = args.host
         

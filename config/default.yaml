@@ -13,10 +13,7 @@ gui: false
 gui_log: false
 share: false
 show_log: false
-models:
-  mistral: mistral
-  llama2: llama2
-  phi-2: phi-2
+model: mistral
 model_config:
   hf_id: ''
   hf_file: ''
@@ -35,8 +32,8 @@ model_config:
   assistant_prompt_end_token: '<|eot_id|>'
   assistant_followup_prompt_start_token: ''
   assistant_followup_prompt_end_token: '<|eot_id|>'
-  end_tokens: 
-    - '<|eot_id|>'
+  end_tokens:
+  - '<|eot_id|>'
   verbose: true
   default_completion_config:
     max_tokens: 1024

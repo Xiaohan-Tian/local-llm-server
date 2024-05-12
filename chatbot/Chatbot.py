@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import json
 import threading
@@ -9,7 +10,7 @@ from rich.live import Live
 
 from util.ConfigLoader import ConfigLoader
 from util.Loggers import print_centered, fill_row
-from util.Utilities import multi_line_input
+from util.Utilities import multi_line_input_with_stop_words, split_content_and_command
 from communicator.LLMCommunicator import LLMCommunicator
 
 class Chatbot:
@@ -27,8 +28,9 @@ class Chatbot:
             # always print as soon as possible
             self.config['stream_batch_size'] = 1
             formatted_json = json.dumps(self.config, indent=4)
-            print(f"CONFIGURATIONS: ")
-            print(formatted_json)
+            if self.config['debug_mode']:
+                print(f"CONFIGURATIONS: ")
+                print(formatted_json)
             
     def complete(self, messages=[]):
         with Chatbot._lock:
@@ -141,6 +143,33 @@ class Chatbot:
 
         except Exception as e:
             self.console.print(f"Error: {e}", style="bold red")
+            
+    def load_model(self, model_name):
+        print(f"Loading model {model_name}...")
+        
+        # Offload
+        LLMCommunicator.pop()
+        
+        # update config
+        new_default_config = ConfigLoader.read_config('default.yaml')
+        new_default_config['model'] = model_name
+        # print(new_default_config)
+        ConfigLoader.save_config('default.yaml', config=new_default_config)
+        
+        # reload config
+        config = ConfigLoader(reload=True).get()
+        config = ConfigLoader().load_config(model_name, path='./llm_config/').get()
+        
+        formatted_json = json.dumps(config, indent=4)
+        print(f"=== ===  === ===  === ===\t\t CONFIGURATIONS \t\t=== ===  === ===  === ===")
+        print(formatted_json)
+        
+        # initiate LLM
+        LLMCommunicator.get()
+
+    def pull_model(self, path1, path2, path3, config_name, base_config_name):
+        # Dummy method to pull a model configuration
+        print(f"Pulling model from {path1}/{path2}/{path3} as {config_name} from {base_config_name}")
 
     def run(self):
         """Run the chatbot, accepting input until the user types 'quit'."""
@@ -155,21 +184,46 @@ class Chatbot:
 
             user_input = ""
             if self.config['multiline']:
-                user_input = multi_line_input("\n\n>>> ") 
+                user_input = multi_line_input_with_stop_words("\n\n>>> ", ['/quit', '/q', '/clear', '/c', '/load', '/pull', '/chat', '/']) 
             else:
                 user_input = input("\n\n>>> ") 
 
-            if user_input.lower() == 'quit':
+            user_content, user_command = split_content_and_command(user_input)
+            
+            if user_command == "/quit" or user_command == "/q":
                 os._exit(0)
                 break
-            elif user_input.lower() == 'clear':
+            elif user_command == "/clear" or user_command == "/c":
                 self.messages = []
                 self.console.print("Chat history has been cleared.", style="bold green")
-            else:
-                proceed_response = self.add_message("user", user_input)
+            elif match := re.match(r"/load ([a-zA-Z][a-zA-Z0-9_-]*)$", user_command):
+                model_name = match.group(1)
+                self.load_model(model_name)
+            elif match := re.match(r"/pull ([a-zA-Z][a-zA-Z0-9_.-]*)/([a-zA-Z][a-zA-Z0-9_.-]*)/([a-zA-Z][a-zA-Z0-9_.-]*) as ([a-zA-Z][a-zA-Z0-9_-]*) from ([a-zA-Z][a-zA-Z0-9_-]*)$", user_command):
+                path1, path2, path3, config_name, base_config_name = match.groups()
+                self.pull_model(path1, path2, path3, config_name, base_config_name)
+            elif user_command in ['/chat', '/']:
+                proceed_response = self.add_message("user", user_content)
                 if proceed_response:
                     try:
                         self.stream_openai_response()
                     except Exception as e:
                         print("An error occurred while running the chatbot:")
                         self.console.print(e)
+            else:
+                self.console.print("Unknown command.", style="bold red")
+
+            #     if user_input.lower() == 'quit':
+            #     os._exit(0)
+            #     break
+            # elif user_input.lower() == 'clear':
+            #     self.messages = []
+            #     self.console.print("Chat history has been cleared.", style="bold green")
+            # else:
+            #     proceed_response = self.add_message("user", user_input)
+            #     if proceed_response:
+            #         try:
+            #             self.stream_openai_response()
+            #         except Exception as e:
+            #             print("An error occurred while running the chatbot:")
+            #             self.console.print(e)
