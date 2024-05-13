@@ -20,7 +20,7 @@ This application is a local server that emulates the OpenAI completion API, allo
     
     a. Linux
     ```bash
-    CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python==0.2.57 --force-reinstall --upgrade --no-cache-dir --verbose
+    CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python==0.2.74 --force-reinstall --upgrade --no-cache-dir --verbose
     ```
     b. macOS
     - Make sure you have XCode installed (Please install the full version via AppStore, not only the command-line tools)
@@ -32,11 +32,11 @@ This application is a local server that emulates the OpenAI completion API, allo
     - for Intel CPU w/AMD GPU based macOS:
     ```bash
     pip uninstall llama-cpp-python -y
-    CMAKE_ARGS="-DLLAMA_METAL=on" pip install -U llama-cpp-python==0.2.57 --no-cache-dir
+    CMAKE_ARGS="-DLLAMA_METAL=on" pip install -U llama-cpp-python==0.2.74 --no-cache-dir
     ```
     - for Apple Silicon based macOS:
     ```bash
-    pip uninstall llama-cpp-python==0.2.57 -y
+    pip uninstall llama-cpp-python==0.2.74 -y
     CMAKE_ARGS="-DLLAMA_METAL_EMBED_LIBRARY=ON -DLLAMA_METAL=on" pip install -U llama-cpp-python --no-cache-dir
     ```
     c. Windows
@@ -50,7 +50,7 @@ This application is a local server that emulates the OpenAI completion API, allo
     echo %CMAKE_ARGS%
     echo %FORCE_CMAKE%
 
-    pip install llama-cpp-python==0.2.57 --force-reinstall --upgrade --no-cache-dir --verbose
+    pip install llama-cpp-python==0.2.74 --force-reinstall --upgrade --no-cache-dir --verbose
     ```
 
    For detailed installation instructions, please refer to the [**llama-cpp-python**](https://github.com/abetlen/llama-cpp-python) project page.

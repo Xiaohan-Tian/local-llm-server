@@ -1,0 +1,27 @@
+model_config:
+  hf_id: "microsoft/Phi-3-mini-4k-instruct-gguf"
+  hf_file: "Phi-3-mini-4k-instruct-q4.gguf"
+  n_threads: 2
+  n_batch: 512
+  n_gpu_layers: -1
+  n_ctx: 4096
+  system_prompt: false
+  system_prompt_start_token: ""
+  system_prompt_end_token: ""
+  user_prompt_start_token: "<|user|>\n"
+  user_prompt_end_token: "<|end|>\n<|assistant|>\n"
+  user_followup_prompt_start_token: "<|user|>\n"
+  user_followup_prompt_end_token: "<|end|>\n<|assistant|>\n"
+  assistant_prompt_start_token: ""
+  assistant_prompt_end_token: "<|end|>\n"
+  assistant_followup_prompt_start_token: " "
+  assistant_followup_prompt_end_token: "<|end|>\n"
+  end_tokens: 
+    - "</s>"
+  verbose: true
+  default_completion_config:
+    max_tokens: 8196
+    temperature: 0.0
+    repeat_penalty: 1.1
+    echo: false
+    top_p: 0.95
