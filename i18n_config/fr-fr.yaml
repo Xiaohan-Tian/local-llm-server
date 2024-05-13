@@ -1,0 +1,17 @@
+you: "VOUS:"
+user_msg_hint: 'Appuyez sur "Entrée" pour envoyer un message, appuyez sur "Maj" + "Entrée" pour créer une nouvelle ligne.'
+new: "Nouveau"
+clear: "Effacer"
+send: "Envoyer"
+cb_help: |
+    - Entrez votre message après le ">>>", puis appuyez sur "Retour/Entrée" pour commencer une nouvelle ligne.
+    - Tapez "/chat" ou "/" pour envoyer le message actuel au LLM.
+    - Tapez "/quit" ou "/q" pour quitter l'application.
+    - Tapez "/clear" ou "/c" pour effacer l'historique de la conversation.
+    - Tapez "/load {model_name}" pour charger un modèle par son nom, en vérifiant que le fichier de configuration "./llm_config/{model_name}.yaml" existe.
+    - Tapez "/pull {huggingface_id}/{huggingface_file} as {model_name} from {base_model_name}" pour télécharger un modèle de HuggingFace. Assurez-vous que le fichier de configuration "./llm_config/{base_model_name}.yaml" existe; un nouveau fichier de configuration "./llm_config/{model_name}.yaml" sera automatiquement créé. Exemple : "/pull microsoft/Phi-3-mini-4k-instruct-gguf/Phi-3-mini-4k-instruct-q4.gguf as phi3 from phi2".
+    - Tapez "/language {language_tag}" pour passer à une langue spécifiée. N'oubliez pas de redémarrer l'application pour que les nouveaux paramètres de langue prennent effet.
+cb_chat_history_cleared: "L'historique de la conversation a été effacé."
+cb_unknown_command: "Commande inconnue."
+cb_you: "VOUS"
+cb_assistant: "ASSISTANT"

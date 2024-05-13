@@ -1,0 +1,17 @@
+you: "您："
+user_msg_hint: '按“回车”键发送消息；按“Shift + 回车”键换行。'
+new: "新建对话"
+clear: "清除对话"
+send: "发送"
+cb_help: |
+    - 请在“>>>”后输入您的消息，按“回车”键可以换行。
+    - 输入“/chat”或“/”将当前的消息发送给LLM。
+    - 输入“/quit”或“/q”退出程序。
+    - 输入“/clear”或“/c”清除对话记录。
+    - 输入“/load {model_name}”可以加载名为{model_name}的模型，请确保配置文件“./llm_config/{model_name}.yaml”存在且有效。
+    - 输入“/pull {huggingface_id}/{huggingface_file}" as {model_name} from {base_model_name}”可以从HuggingFace上下载模型. 请确保“./llm_config/{base_model_name}.yaml”存在，新的配置文件“./llm_config/{model_name}.yaml”会基于此文件被创建。用例：“/pull microsoft/Phi-3-mini-4k-instruct-gguf/Phi-3-mini-4k-instruct-q4.gguf as phi3 from phi2”。
+    - 输入“/language {language_tag}”可以切换程序语言。请重启程序以使之生效。
+cb_chat_history_cleared: "对话记录已清除。"
+cb_unknown_command: "未知指令。"
+cb_you: "您"
+cb_assistant: "AI"

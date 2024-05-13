@@ -25,6 +25,7 @@ class Chatbot:
             self.config = ConfigLoader().get()
             self.console = Console()
             self.messages = []
+            self.i18n = ConfigLoader().load_config(self.config['language'], path='./i18n_config/').get()
 
             # always print as soon as possible
             formatted_json = json.dumps(self.config, indent=4)
@@ -132,7 +133,7 @@ class Chatbot:
 
             # Collect chunks to process markdown partially
             fill_row('─')
-            self.console.print(f"ASSISTANT:\n", style="bold #AB68FF")
+            self.console.print(f"{self.i18n['cb_assistant']}:\n", style="bold #AB68FF")
 
             partial_response = ""
             with Live(Markdown(""), console=self.console, auto_refresh=True) as live:
@@ -149,6 +150,15 @@ class Chatbot:
         except Exception as e:
             self.console.print(f"Error: {e}", style="bold red")
             
+    def switch_language(self, language):
+        print(f"Please restart the app to reload the language resource file.")
+        
+        # update config
+        new_default_config = ConfigLoader.read_config('default.yaml')
+        new_default_config['language'] = language
+        # print(new_default_config)
+        ConfigLoader.save_config('default.yaml', config=new_default_config)
+        
     def load_model(self, model_name):
         print(f"Loading model {model_name}...")
         
@@ -187,13 +197,13 @@ class Chatbot:
     def run(self):
         """Run the chatbot, accepting input until the user types 'quit'."""
         if self.config['multiline']:
-            self.console.print("Press 'Enter/Return' to start a new line, press 'Enter/Return' twice to submit the message. Type 'quit' to exit, type 'clear' to clear chat history.", style="bold green")
+            self.console.print(self.i18n['cb_help'], style="bold green")
         else:
-            self.console.print("Type 'quit' to exit, type 'clear' to clear chat history.", style="bold green")
+            self.console.print(self.i18n['cb_help'], style="bold green")
             
         while True:
             fill_row('─')
-            self.console.print("YOU: ", style="bold #d2bc95")
+            self.console.print(f"{self.i18n['cb_you']}: ", style="bold #d2bc95")
 
             user_input = ""
             if self.config['multiline']:
@@ -208,7 +218,10 @@ class Chatbot:
                 break
             elif user_command == "/clear" or user_command == "/c":
                 self.messages = []
-                self.console.print("Chat history has been cleared.", style="bold green")
+                self.console.print(self.i18n['cb_chat_history_cleared'], style="bold green")
+            elif match := re.match(r"/language ([a-zA-Z][a-zA-Z0-9_-]*)$", user_command):
+                language = match.group(1)
+                self.switch_language(language)
             elif match := re.match(r"/load ([a-zA-Z][a-zA-Z0-9_-]*)$", user_command):
                 model_name = match.group(1)
                 self.load_model(model_name)
@@ -224,19 +237,4 @@ class Chatbot:
                         print("An error occurred while running the chatbot:")
                         self.console.print(e)
             else:
-                self.console.print("Unknown command.", style="bold red")
-
-            #     if user_input.lower() == 'quit':
-            #     os._exit(0)
-            #     break
-            # elif user_input.lower() == 'clear':
-            #     self.messages = []
-            #     self.console.print("Chat history has been cleared.", style="bold green")
-            # else:
-            #     proceed_response = self.add_message("user", user_input)
-            #     if proceed_response:
-            #         try:
-            #             self.stream_openai_response()
-            #         except Exception as e:
-            #             print("An error occurred while running the chatbot:")
-            #             self.console.print(e)
+                self.console.print(self.i18n['cb_unknown_command'], style="bold red")

@@ -11,14 +11,7 @@ from communicator.LLMCommunicator import LLMCommunicator
 
 openai_client = None
 
-const_values = {
-    "you": "YOU:", 
-    "user_msg_hint": "Press \"Enter\" to send message, press \"Shift\" + \"Enter\" to create a new line.", 
-    "new": "New", 
-    "clear": "Clear", 
-    "send": "Send"
-}
-
+const_values = None
 theme = gr.themes.Default(
     primary_hue="blue",
     secondary_hue="blue",
@@ -314,7 +307,11 @@ footer {
 """
 
 def start_gradio(share=False):
+    global const_values
+    
+    gr.set_static_paths(paths=["static/banner.png"])
     config = ConfigLoader().get()
+    const_values = ConfigLoader().load_config(config['language'], path='./i18n_config/').get()
     
     global openai_client
     openai_client = OpenAI(
@@ -327,7 +324,7 @@ def start_gradio(share=False):
         with gr.Row():
             with gr.Column(elem_id="left-panel", elem_classes=["full_height"], scale=0):
                 lbl_logo = gr.Markdown("""
-                ![LOCAL-LLM-SERVER](https://xiaohan-tian.github.io/res/lls-banner.png "LOCAL-LLM-SERVER")
+                ![LOCAL-LLM-SERVER](/file=static/banner.png "LOCAL-LLM-SERVER")
                 """, elem_classes=["centered"])
                 # btn_settings = gr.Button("Settings")
                 df_sessions = gr.Dataframe(

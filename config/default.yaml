@@ -7,6 +7,7 @@ use_gpu: true
 stream_batch_size: 1
 llm_secret: 'NA'
 llm_base_url: 'NA'
+language: 'en-us'
 chatbot: false
 multiline: false
 gui: false

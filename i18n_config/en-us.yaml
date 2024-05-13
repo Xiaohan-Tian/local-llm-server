@@ -1,0 +1,17 @@
+you: "YOU:"
+user_msg_hint: 'Press "Enter" to send message, press "Shift" + "Enter" to create a new line.'
+new: "New"
+clear: "Clear"
+send: "Send"
+cb_help: |
+    - Enter your message after the ">>>", then press "Return/Enter" to start a new line.
+    - Type "/chat" or "/" to send the current message to the language model (LLM).
+    - Type "/quit" or "/q" to exit the application.
+    - Type "/clear" or "/c" to clear the chat history.
+    - Type "/load {model_name}" to load a model by its name, ensuring the configuration file "./llm_config/{model_name}.yaml" exists.
+    - Type "/pull {huggingface_id}/{huggingface_file}" as {model_name} from {base_model_name} to download a model from HuggingFace. Ensure the configuration file "./llm_config/{base_model_name}.yaml" exists; a new configuration file "./llm_config/{model_name}.yaml" will be automatically created. Example: "/pull microsoft/Phi-3-mini-4k-instruct-gguf/Phi-3-mini-4k-instruct-q4.gguf as phi3 from phi2".
+    - Type "/language {language_tag}" to switch to a specified language. Remember to restart the app for the new language settings to take effect.
+cb_chat_history_cleared: "Chat history has been cleared."
+cb_unknown_command: "Unknown command."
+cb_you: "YOU"
+cb_assistant: "ASSISTANT"
