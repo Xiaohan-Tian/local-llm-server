@@ -7,15 +7,17 @@ from huggingface_hub import hf_hub_download
 from util.ConfigLoader import ConfigLoader
 
 
-def load_model():
+def load_model(model_config=None):
     config = ConfigLoader().get()
-    target_model_folder = f"{config['model_root']}/{config['model_config']['hf_id']}/"
-    target_model_path = f"{config['model_root']}/{config['model_config']['hf_id']}/{config['model_config']['hf_file']}"
+    if model_config is None:
+        model_config = config['model_config']
+    target_model_folder = f"{config['model_root']}/{model_config['hf_id']}/"
+    target_model_path = f"{config['model_root']}/{model_config['hf_id']}/{model_config['hf_file']}"
     
     print(f"=== ===  === ===  === ===\t\tLOADING MODEL\t\t=== ===  === ===  === ===")
     print(f"target_model_path \t = {target_model_path}")
-    print(f"hf_id \t\t\t = {config['model_config']['hf_id']}")
-    print(f"hf_name \t\t = {config['model_config']['hf_file']}")
+    print(f"hf_id \t\t\t = {model_config['hf_id']}")
+    print(f"hf_name \t\t = {model_config['hf_file']}")
     
     if os.path.exists(target_model_path):
         print("File exists, skipping downloading.")
@@ -43,7 +45,7 @@ def load_model():
                 print(f"Created folder: {current_path}")
 
         # download model file and move to the destination
-        model_path = hf_hub_download(repo_id=config['model_config']['hf_id'], filename=config['model_config']['hf_file'])
+        model_path = hf_hub_download(repo_id=model_config['hf_id'], filename=model_config['hf_file'])
 
         actual_file = os.path.realpath(model_path)
 
