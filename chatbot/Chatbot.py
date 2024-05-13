@@ -12,6 +12,7 @@ from util.ConfigLoader import ConfigLoader
 from util.Loggers import print_centered, fill_row
 from util.Utilities import multi_line_input_with_stop_words, split_content_and_command
 from communicator.LLMCommunicator import LLMCommunicator
+from loader.HFLoader import load_model
 
 class Chatbot:
     _lock = threading.Lock()
@@ -26,7 +27,6 @@ class Chatbot:
             self.messages = []
 
             # always print as soon as possible
-            self.config['stream_batch_size'] = 1
             formatted_json = json.dumps(self.config, indent=4)
             if self.config['debug_mode']:
                 print(f"CONFIGURATIONS: ")
@@ -45,6 +45,11 @@ class Chatbot:
             default_temperature = default_completion_config['temperature']
             default_repeat_penalty = default_completion_config['repeat_penalty']
             default_echo = default_completion_config['echo']
+            
+            # print(f"default_max_tokens = {default_max_tokens}")
+            # print(f"default_temperature = {default_temperature}")
+            # print(f"default_repeat_penalty = {default_repeat_penalty}")
+            # print(f"default_echo = {default_echo}")
 
             # Check if messages are provided and length is appropriate
             res = llm.complete_messages(
@@ -168,8 +173,16 @@ class Chatbot:
         LLMCommunicator.get()
 
     def pull_model(self, path1, path2, path3, config_name, base_config_name):
-        # Dummy method to pull a model configuration
-        print(f"Pulling model from {path1}/{path2}/{path3} as {config_name} from {base_config_name}")
+        print(f"Pulling model from {path1}/{path2}/{path3} as {config_name} from {base_config_name}...")
+        
+        # create config
+        new_llm_config = ConfigLoader.read_config(f"{base_config_name}.yaml", path="./llm_config/")
+        new_llm_config['model_config']['hf_id'] = f"{path1}/{path2}"
+        new_llm_config['model_config']['hf_file'] = f"{path3}"
+        ConfigLoader.save_config(f"{config_name}.yaml", path="./llm_config/", config=new_llm_config)
+        
+        # pull model from HF
+        load_model(model_config=new_llm_config['model_config'])
 
     def run(self):
         """Run the chatbot, accepting input until the user types 'quit'."""

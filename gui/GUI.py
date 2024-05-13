@@ -179,6 +179,11 @@ def handle_bot_msg(history):
     default_repeat_penalty = default_completion_config['repeat_penalty']
     default_echo = default_completion_config['echo']
     
+    # print(f"default_max_tokens = {default_max_tokens}")
+    # print(f"default_temperature = {default_temperature}")
+    # print(f"default_repeat_penalty = {default_repeat_penalty}")
+    # print(f"default_echo = {default_echo}")
+    
     response_stream = llm.complete_messages(
         messages, 
         max_tokens=default_max_tokens,

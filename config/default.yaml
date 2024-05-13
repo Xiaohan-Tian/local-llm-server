@@ -4,7 +4,7 @@ port: '8000'
 url_prefix: /v1
 debug_mode: true
 use_gpu: true
-stream_batch_size: 8
+stream_batch_size: 1
 llm_secret: 'NA'
 llm_base_url: 'NA'
 chatbot: false
