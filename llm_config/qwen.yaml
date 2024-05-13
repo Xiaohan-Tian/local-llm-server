@@ -1,0 +1,27 @@
+model_config:
+  hf_id: "Qwen/Qwen1.5-7B-Chat-GGUF"
+  hf_file: "qwen1_5-7b-chat-q4_k_m.gguf"
+  n_threads: 2
+  n_batch: 512
+  n_gpu_layers: -1
+  n_ctx: 8196
+  system_prompt: true
+  system_prompt_start_token: "<|im_start|>system\n"
+  system_prompt_end_token: "<|im_end|>\n"
+  user_prompt_start_token: "<|im_start|>user\n"
+  user_prompt_end_token: "<|im_end|>\n<|im_start|>assistant\n"
+  user_followup_prompt_start_token: "<|im_start|>user\n"
+  user_followup_prompt_end_token: "<|im_end|>\n<|im_start|>assistant\n"
+  assistant_prompt_start_token: ""
+  assistant_prompt_end_token: "<|im_end|>\n"
+  assistant_followup_prompt_start_token: " "
+  assistant_followup_prompt_end_token: "<|im_end|>\n"
+  end_tokens: 
+    - "</s>"
+  verbose: true
+  default_completion_config:
+    max_tokens: 8196
+    temperature: 0.0
+    repeat_penalty: 1.1
+    echo: false
+    top_p: 0.95
