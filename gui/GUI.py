@@ -1,15 +1,10 @@
 import gradio as gr
 import pandas as pd
-import uuid
-import random
-import time
-
-from openai import OpenAI
+import webbrowser
 
 from util.ConfigLoader import ConfigLoader
+from util.Utilities import detect_os
 from communicator.LLMCommunicator import LLMCommunicator
-
-openai_client = None
 
 const_values = None
 theme = gr.themes.Default(
@@ -258,6 +253,10 @@ css = """
 #right-panel { 
 }
 
+#df_sessions table {
+    overflow-x: hidden;
+}
+
 #df_sessions table thead {
     display: none;
 }
@@ -309,17 +308,11 @@ footer {
 def start_gradio(share=False):
     global const_values
     
-    gr.set_static_paths(paths=["static/banner.png"])
+    gr.set_static_paths(paths=["static/banner.png", "static/logo@256x256.png"])
     config = ConfigLoader().get()
     const_values = ConfigLoader().load_config(config['language'], path='./i18n_config/').get()
     
-    global openai_client
-    openai_client = OpenAI(
-        api_key=config['llm_secret'],
-        base_url=f"http://127.0.0.1:{config['port']}/v1"
-    )
-    
-    with gr.Blocks(css=css, theme=theme) as demo:
+    with gr.Blocks(css=css, theme=theme, title="LOCAL-LLM-SERVER") as demo:
         session = gr.State([])
         with gr.Row():
             with gr.Column(elem_id="left-panel", elem_classes=["full_height"], scale=0):
@@ -373,6 +366,9 @@ def start_gradio(share=False):
             unfreeze_ui, [session], [session, btn_new_session, btn_clear, btn_send]
         )
 
-    demo.launch(share=share, prevent_thread_lock=True)
+    open_browser = False
+    user_os = detect_os()
+    if user_os == 'windows' or user_os == 'darwin':
+        open_browser = True
 
-    
+    demo.launch(favicon_path="static/logo@256x256.png", inbrowser=open_browser, server_port=config['gui_port'], share=share, prevent_thread_lock=True)

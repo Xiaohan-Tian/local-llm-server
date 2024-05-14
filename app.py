@@ -71,13 +71,13 @@ if __name__ == '__main__':
     parser.add_argument('--port', required=False, type=int, help='The port which the server should listen to')
     parser.add_argument('--use_gpu', required=False, type=int, help='Should use GPU')
     
-    parser.add_argument('--chatbot', required=False, type=int, default=0, help='Enable CLI Chatbot')
-    parser.add_argument('--multiline', required=False, type=int, default=0, help='Allow multi-line input for commandline chatbot')
-    parser.add_argument('--gui', required=False, type=int, default=0, help='Enable Gradio UI')
-    parser.add_argument('--share', required=False, type=int, default=0, help='Generate a public accessible Gradio UI URL')
-    parser.add_argument('--show_log', required=False, type=int, default=0, help='show system logs in the Chatbot/GUI mode')
+    parser.add_argument('--chatbot', required=False, type=int, help='Enable CLI Chatbot')
+    parser.add_argument('--multiline', required=False, type=int, help='Allow multi-line input for commandline chatbot')
+    parser.add_argument('--gui', required=False, type=int, help='Enable Gradio UI')
+    parser.add_argument('--share', required=False, type=int, help='Generate a public accessible Gradio UI URL')
+    parser.add_argument('--show_log', required=False, type=int, help='show system logs in the Chatbot/GUI mode')
 
-    args = parser.parse_args()    
+    args = parser.parse_args()
 
     config = ConfigLoader().load_config(args.model).get()
 
@@ -120,7 +120,7 @@ if __name__ == '__main__':
     main_lock.acquire()
     
     if config['gui']:
-        start_gradio(share=True)
+        start_gradio(share=config['share'])
         print(f"=== ===  === ===  === ===\t\t GUI STARTED \t\t=== ===  === ===  === ===")
     
     if config['chatbot']:

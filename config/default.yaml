@@ -8,10 +8,11 @@ stream_batch_size: 1
 llm_secret: 'NA'
 llm_base_url: 'NA'
 language: 'en-us'
-chatbot: false
-multiline: false
-gui: false
+chatbot: true
+multiline: true
+gui: true
 gui_log: false
+gui_port: 7860
 share: false
 show_log: false
 model: mistral
