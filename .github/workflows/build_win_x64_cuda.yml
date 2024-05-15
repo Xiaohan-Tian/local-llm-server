@@ -11,13 +11,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-          lfs: true
+          # lfs: true
           token: ${{ secrets.LLS_CICD }}
 
     - name: Set up Python 3.9
       uses: actions/setup-python@v4
       with:
         python-version: 3.9.13
+
+    - name: Initialize B2
+      run: |
+        pip3 install --upgrade b2
+        b2 authorize_account ${{ secrets.B2_KEY_ID }} ${{ secrets.B2_APP_KEY }}
+
+    - name: Download static files from B2
+      run: |
+        b2 sync --threads 10 ${{ secrets.B2_BUCKET }} .\b2
 
     - name: Install dependencies
       run: |
@@ -30,11 +39,11 @@ jobs:
 
     - name: Copy lib_llama_cpp files
       shell: cmd
-      run: xcopy .\lib\win64_cuda\lib_llama_cpp .\dist\app\llama_cpp /E /H /C /I /Y
+      run: xcopy .\b2\lib\win64_cuda\lib_llama_cpp .\dist\app\llama_cpp /E /H /C /I /Y
 
     - name: Copy lib_cuda files
       shell: cmd
-      run: xcopy .\lib\win64_cuda\lib_cuda .\dist\app /E /H /C /I /Y
+      run: xcopy .\b2\lib\win64_cuda\lib_cuda .\dist\app /E /H /C /I /Y
 
     - name: Zip the build
       run: Compress-Archive -Path .\dist\app\* -DestinationPath ./LLS-win-x64-cuda-$(Get-Content .\version.txt).zip -Force
