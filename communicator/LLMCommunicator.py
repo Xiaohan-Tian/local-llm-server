@@ -3,6 +3,7 @@ import threading
 from llama_cpp import Llama
 
 from util.ConfigLoader import ConfigLoader
+from util.Utilities import detect_os
 from loader.HFLoader import load_model
 
 class LLMCommunicator:
@@ -35,6 +36,11 @@ class LLMCommunicator:
         self._n_gpu_layers = (model_config['n_gpu_layers'] if config['use_gpu'] else 0)
         self._n_ctx = model_config['n_ctx']
         self._verbose = model_config['verbose']
+
+        # fix "_model_path" for Windows
+        if detect_os() == 'windows':
+            if self._model_path.startswith('/'):
+                self._model_path = 'C:' + self._model_path.replace('/', '\\')
         
         self.system_prompt = model_config['system_prompt']
         self.system_prompt_start_token = model_config['system_prompt_start_token']

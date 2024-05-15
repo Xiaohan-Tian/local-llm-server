@@ -1,4 +1,6 @@
 __pycache__
+build/
+dist/
 .vscode
 .ipynb_checkpoints
 test*.ipynb
