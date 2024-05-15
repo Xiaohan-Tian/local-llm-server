@@ -31,5 +31,5 @@ jobs:
           git config --global user.name "GitHub Action"
           git add version.txt
           git commit -m "Update version number to ${{ env.New_Version }}"
-          git remote set-url origin https://$GITHUB_ACTOR:${{ secrets.LLS_CICD }}@github.com/${{ github.repository }}
+          git remote set-url origin https://x-access-token:${{ secrets.LLS_CICD }}@github.com/${{ github.repository }}
           git push
