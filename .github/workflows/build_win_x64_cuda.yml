@@ -37,9 +37,7 @@ jobs:
       run: xcopy .\lib\win64_cuda\lib_cuda .\dist\app /E /H /C /I /Y
 
     - name: Zip the build
-      uses: montudor/action-zip@v0.1.1
-      with:
-        args: zip -r ./LLS-win-x64-cuda-$(cat .\version.txt).zip ./dist/app
+      run: Compress-Archive -Path .\dist\app\* -DestinationPath ./LLS-win-x64-cuda-$(Get-Content .\version.txt).zip -Force
 
     - name: Read version from file
       id: version
