@@ -32,3 +32,5 @@ jobs:
           git add version.txt
           git commit -m "Update version number to ${{ env.New_Version }}"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.LLS_CICD }}
