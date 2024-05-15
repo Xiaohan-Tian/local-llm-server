@@ -26,7 +26,7 @@ jobs:
 
     - name: Download static files from B2
       run: |
-        b2 sync --threads 10 ${{ secrets.B2_BUCKET }} .\b2
+        b2 sync --threads 10 b2://${{ secrets.B2_BUCKET }} .\b2
 
     - name: Install dependencies
       run: |
