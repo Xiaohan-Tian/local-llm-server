@@ -23,6 +23,7 @@ jobs:
       run: |
         pip install llama-cpp-python==0.2.74 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
         pip install -r requirements.txt
+        pip install pyinstaller==5.13.2
 
     - name: Build with PyInstaller
       run: pyinstaller app.spec
