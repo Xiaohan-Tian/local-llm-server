@@ -1,0 +1,73 @@
+name: Build Windows x64 CUDA EXE
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+          lfs: true
+          token: ${{ secrets.LLS_CICD }}
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9.16
+
+    - name: Install dependencies
+      run: |
+        pip install llama-cpp-python==0.2.74 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+        pip install -r requirements.txt
+
+    - name: Build with PyInstaller
+      run: pyinstaller app.spec
+
+    - name: Copy lib_llama_cpp files
+      shell: cmd
+      run: xcopy .\lib\win64_cuda\lib_llama_cpp .\dist\app\llama_cpp /E /H /C /I /Y
+
+    - name: Copy lib_cuda files
+      shell: cmd
+      run: xcopy .\lib\win64_cuda\lib_cuda .\dist\app /E /H /C /I /Y
+
+    - name: Zip the build
+      uses: montudor/action-zip@v0.1.1
+      with:
+        args: zip -r ./LLS-win-x64-cuda-$(cat .\version.txt).zip ./dist/app
+
+    - name: Read version from file
+      id: version
+      run: |
+        echo "VERSION=$(type .\version.txt)" | Out-String -Stream | Set-Content -Path $env:GITHUB_ENV
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.LLS_CICD }}
+      with:
+        tag_name: ${{ env.VERSION }}
+        release_name: Release ${{ env.VERSION }}
+        body: Release of LLS-win-x64-cuda-${{ env.VERSION }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.LLS_CICD }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./LLS-win-x64-cuda-${{ env.VERSION }}.zip
+        asset_name: LLS-win-x64-cuda-${{ env.VERSION }}.zip
+        asset_content_type: application/zip
