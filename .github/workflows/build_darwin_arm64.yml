@@ -36,13 +36,17 @@ jobs:
       run: |
         echo "VERSION=$(cat ./version.txt)" >> $GITHUB_ENV
 
+    - name: Generate tag name
+      run: |
+        echo "TAG_VERSION=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.LLS_CICD }}
       with:
-        tag_name: darwin-arm64-${{ env.VERSION }}
+        tag_name: darwin-arm64-${{ env.TAG_VERSION }}
         release_name: Release of LLS-darwin-arm64-${{ env.VERSION }}
         body: Release of LLS-darwin-arm64-${{ env.VERSION }}
         draft: false
