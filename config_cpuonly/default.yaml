@@ -1,0 +1,45 @@
+model_root: ~/lls/LLMs
+host: 127.0.0.1
+port: '8000'
+url_prefix: /v1
+debug_mode: true
+use_gpu: false
+stream_batch_size: 1
+llm_secret: 'NA'
+llm_base_url: 'NA'
+language: 'en-us'
+chatbot: true
+multiline: true
+gui: true
+gui_log: false
+gui_port: 7860
+share: false
+show_log: false
+model: mistral
+model_config:
+  hf_id: ''
+  hf_file: ''
+  n_threads: 2
+  n_batch: 512
+  n_gpu_layers: -1
+  n_ctx: 1024
+  system_prompt: true
+  system_prompt_start_token: '<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n'
+  system_prompt_end_token: '<|eot_id|>'
+  user_prompt_start_token: '<|start_header_id|>user<|end_header_id|>\n'
+  user_prompt_end_token: '<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n'
+  user_followup_prompt_start_token: '<|start_header_id|>user<|end_header_id|>\n'
+  user_followup_prompt_end_token: '<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n'
+  assistant_prompt_start_token: ''
+  assistant_prompt_end_token: '<|eot_id|>'
+  assistant_followup_prompt_start_token: ''
+  assistant_followup_prompt_end_token: '<|eot_id|>'
+  end_tokens:
+  - '<|eot_id|>'
+  verbose: true
+  default_completion_config:
+    max_tokens: 1024
+    temperature: 0.0
+    repeat_penalty: 1.1
+    echo: false
+    top_p: 1

@@ -19,6 +19,27 @@ jobs:
       with:
         python-version: 3.9.13
 
+    - name: Install dependencies
+      run: |
+        pip install llama-cpp-python==0.2.74 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+        pip install -r requirements.txt
+        pip install pyinstaller==5.13.2
+
+    - name: Build with PyInstaller
+      run: pyinstaller app.spec
+
+    - name: Copy CPU-only default config
+      shell: cmd
+      run: xcopy .\config_cpuonly .\dist\app\config /E /H /C /I /Y
+
+    - name: Zip the build
+      run: Compress-Archive -Path .\dist\app\* -DestinationPath ./LLS-win-x64-cpu-$(Get-Content .\version.txt).zip -Force
+
+    - name: Read version from file
+      id: version
+      run: |
+        echo "VERSION=$(type .\version.txt)" | Out-String -Stream | Set-Content -Path $env:GITHUB_ENV
+    
     - name: Generate tag name
       shell: cmd
       run: |
@@ -37,23 +58,6 @@ jobs:
         set TAG_VERSION=%year%%month%%day%%hour%%minute%%second%
         echo TAG_VERSION=%TAG_VERSION%>> %GITHUB_ENV%
 
-    - name: Install dependencies
-      run: |
-        pip install llama-cpp-python==0.2.74 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
-        pip install -r requirements.txt
-        pip install pyinstaller==5.13.2
-
-    - name: Build with PyInstaller
-      run: pyinstaller app.spec
-
-    - name: Zip the build
-      run: Compress-Archive -Path .\dist\app\* -DestinationPath ./LLS-win-x64-cpu-$(Get-Content .\version.txt).zip -Force
-
-    - name: Read version from file
-      id: version
-      run: |
-        echo "VERSION=$(type .\version.txt)" | Out-String -Stream | Set-Content -Path $env:GITHUB_ENV
-        
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
