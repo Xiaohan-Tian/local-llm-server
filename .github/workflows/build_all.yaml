@@ -33,16 +33,16 @@ jobs:
         cd ./dist/app
         zip -r ../../LLS-darwin-arm64-$(cat ../../version.txt).zip .
 
+    - name: Read version from file
+      id: version
+      run: |
+        echo "VERSION=$(cat ./version.txt)" >> $GITHUB_ENV
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: macos-arm64-build
-        path: ./LLS-darwin-arm64-$(cat ./version.txt).zip
-
-    - name: Read version from file
-      id: version_macos
-      run: |
-        echo "VERSION=$(cat ./version.txt)" >> $GITHUB_ENV
+        path: ./LLS-darwin-arm64-${{ env.VERSION }}.zip
 
     - name: Generate tag name
       run: |
@@ -80,16 +80,16 @@ jobs:
     - name: Zip the build
       run: Compress-Archive -Path .\dist\app\* -DestinationPath ./LLS-win-x64-cpu-$(Get-Content .\version.txt).zip -Force
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: windows-cpu-build
-        path: ./LLS-win-x64-cpu-$(Get-Content .\version.txt).zip
-
     - name: Read version from file
       id: version_windows
       run: |
         echo "VERSION=$(type .\version.txt)" | Out-String -Stream | Set-Content -Path $env:GITHUB_ENV
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-cpu-build
+        path: ./LLS-win-x64-cpu-${{ env.VERSION }}.zip
 
   create-release:
     runs-on: ubuntu-latest
