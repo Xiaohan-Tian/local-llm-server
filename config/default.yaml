@@ -1,4 +1,4 @@
-model_root: /storage/LLMs
+model_root: ~/lls/LLMs
 host: 127.0.0.1
 port: '8000'
 url_prefix: /v1

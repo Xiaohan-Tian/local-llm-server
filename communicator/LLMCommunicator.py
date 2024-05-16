@@ -3,7 +3,7 @@ import threading
 from llama_cpp import Llama
 
 from util.ConfigLoader import ConfigLoader
-from util.Utilities import detect_os
+from util.Utilities import detect_os, convert_path
 from loader.HFLoader import load_model
 
 class LLMCommunicator:
@@ -30,7 +30,7 @@ class LLMCommunicator:
 
         self._config = config
         self._debug_mode = debug_mode
-        self._model_path = f"{config['model_root']}/{config['model_config']['hf_id']}/{config['model_config']['hf_file']}"
+        self._model_path = f"{convert_path(config['model_root'])}/{config['model_config']['hf_id']}/{config['model_config']['hf_file']}"
         self._n_threads = model_config['n_threads']
         self._n_batch = model_config['n_batch']
         self._n_gpu_layers = (model_config['n_gpu_layers'] if config['use_gpu'] else 0)

@@ -1,11 +1,11 @@
-name: Build Windows x64 CUDA EXE
+name: Build macOS with Apple Silicon Executable
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout code
@@ -19,15 +19,6 @@ jobs:
       with:
         python-version: 3.9.13
 
-    - name: Initialize B2
-      run: |
-        pip3 install --upgrade b2
-        b2 authorize_account ${{ secrets.B2_KEY_ID }} ${{ secrets.B2_APP_KEY }}
-
-    - name: Download static files from B2
-      run: |
-        b2 sync --threads 10 b2://${{ secrets.B2_BUCKET }} .\b2
-
     - name: Install dependencies
       run: |
         pip install llama-cpp-python==0.2.74 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
@@ -37,21 +28,13 @@ jobs:
     - name: Build with PyInstaller
       run: pyinstaller app.spec
 
-    - name: Copy lib_llama_cpp files
-      shell: cmd
-      run: xcopy .\b2\lib\win64_cuda\lib_llama_cpp .\dist\app\llama_cpp /E /H /C /I /Y
-
-    - name: Copy lib_cuda files
-      shell: cmd
-      run: xcopy .\b2\lib\win64_cuda\lib_cuda .\dist\app /E /H /C /I /Y
-
     - name: Zip the build
-      run: Compress-Archive -Path .\dist\app\* -DestinationPath ./LLS-win-x64-cuda-$(Get-Content .\version.txt).zip -Force
+      run: zip -r ./LLS-mac-arm64-cuda-$(cat ./version.txt).zip ./dist/app/
 
     - name: Read version from file
       id: version
       run: |
-        echo "VERSION=$(type .\version.txt)" | Out-String -Stream | Set-Content -Path $env:GITHUB_ENV
+        echo "VERSION=$(cat ./version.txt)" >> $GITHUB_ENV
 
     - name: Create Release
       id: create_release
@@ -59,9 +42,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.LLS_CICD }}
       with:
-        tag_name: win-x64-cuda-${{ env.VERSION }}
-        release_name: Release of LLS-win-x64-cuda-${{ env.VERSION }}
-        body: Release of LLS-win-x64-cuda-${{ env.VERSION }}
+        tag_name: darwin-arm64-${{ env.VERSION }}
+        release_name: Release of LLS-darwin-arm64-${{ env.VERSION }}
+        body: Release of LLS-darwin-arm64-${{ env.VERSION }}
         draft: false
         prerelease: false
 
@@ -71,6 +54,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.LLS_CICD }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./LLS-win-x64-cuda-${{ env.VERSION }}.zip
-        asset_name: LLS-win-x64-cuda-${{ env.VERSION }}.zip
+        asset_path: ./LLS-darwin-arm64-${{ env.VERSION }}.zip
+        asset_name: LLS-darwin-arm64-${{ env.VERSION }}.zip
         asset_content_type: application/zip

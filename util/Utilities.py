@@ -1,3 +1,4 @@
+import os
 import platform
 
 def detect_os():
@@ -75,3 +76,15 @@ def split_content_and_command(user_input):
     if user_command is None: user_command = ""
 
     return user_content.strip(), user_command.strip()
+
+def convert_path(my_path):
+    # Expand the user's home directory symbol (~)
+    expanded_path = os.path.expanduser(my_path)
+
+    # Normalize the path for the current operating system
+    normalized_path = os.path.normpath(expanded_path)
+
+    # Optional: Convert to absolute path
+    absolute_path = os.path.abspath(normalized_path)
+
+    return absolute_path

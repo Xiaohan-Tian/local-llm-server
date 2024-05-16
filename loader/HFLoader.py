@@ -5,14 +5,15 @@ import shutil
 from huggingface_hub import hf_hub_download
 
 from util.ConfigLoader import ConfigLoader
+from util.Utilities import convert_path
 
 
 def load_model(model_config=None):
     config = ConfigLoader().get()
     if model_config is None:
         model_config = config['model_config']
-    target_model_folder = f"{config['model_root']}/{model_config['hf_id']}/"
-    target_model_path = f"{config['model_root']}/{model_config['hf_id']}/{model_config['hf_file']}"
+    target_model_folder = f"{convert_path(config['model_root'])}/{model_config['hf_id']}/"
+    target_model_path = f"{convert_path(config['model_root'])}/{model_config['hf_id']}/{model_config['hf_file']}"
     
     print(f"=== ===  === ===  === ===\t\tLOADING MODEL\t\t=== ===  === ===  === ===")
     print(f"target_model_path \t = {target_model_path}")
@@ -25,7 +26,7 @@ def load_model(model_config=None):
         print("File does not exist, download from HuggingFace...")
         
         # create the target folder if not exist
-        root = config['model_root']
+        root = convert_path(config['model_root'])
         destination = target_model_folder
 
         # Remove the root part from the destination path
