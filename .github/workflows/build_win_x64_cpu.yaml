@@ -38,7 +38,16 @@ jobs:
 
     - name: Generate tag name
       run: |
-        echo TAG_VERSION=%DATE:~10,4%%DATE:~4,2%%DATE:~7,2%%TIME:~0,2%%TIME:~3,2%%TIME:~6,2%>> %GITHUB_ENV%
+        for /f "tokens=1-4 delims=/- " %%a in ('date /t') do set DATE=%%d%%b%%c
+        for /f "tokens=1-3 delims=:., " %%a in ('time /t') do (
+          set HH=%%a
+          set MM=%%b
+          set SS=%%c
+        )
+        if %HH% lss 10 set HH=0%HH%
+        if %MM% lss 10 set MM=0%MM%
+        if %SS% lss 10 set SS=0%SS%
+        echo TAG_VERSION=%DATE%%HH%%MM%%SS%>> %GITHUB_ENV%
         
     - name: Create Release
       id: create_release
