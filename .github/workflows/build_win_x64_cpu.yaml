@@ -19,6 +19,24 @@ jobs:
       with:
         python-version: 3.9.13
 
+    - name: Generate tag name
+      shell: cmd
+      run: |
+        for /f "tokens=1-4 delims=/- " %%a in ('date /t') do (
+          set month=%%a
+          set day=%%b
+          set year=%%c
+        )
+        for /f "tokens=1-2 delims=: " %%a in ('time /t') do (
+          set hour=%%a
+          set minute=%%b
+        )
+        if "%hour:~0,1%" == " " set hour=0%hour:~1,1%
+        if "%minute:~0,1%" == " " set minute=0%minute:~1,1%
+        set second=%time:~6,2%
+        set TAG_VERSION=%year%%month%%day%%hour%%minute%%second%
+        echo TAG_VERSION=%TAG_VERSION%>> %GITHUB_ENV%
+
     - name: Install dependencies
       run: |
         pip install llama-cpp-python==0.2.74 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
@@ -35,19 +53,6 @@ jobs:
       id: version
       run: |
         echo "VERSION=$(type .\version.txt)" | Out-String -Stream | Set-Content -Path $env:GITHUB_ENV
-
-    - name: Generate tag name
-      run: |
-        for /f "tokens=1-4 delims=/- " %%a in ('date /t') do set DATE=%%d%%b%%c
-        for /f "tokens=1-3 delims=:., " %%a in ('time /t') do (
-          set HH=%%a
-          set MM=%%b
-          set SS=%%c
-        )
-        if %HH% lss 10 set HH=0%HH%
-        if %MM% lss 10 set MM=0%MM%
-        if %SS% lss 10 set SS=0%SS%
-        echo TAG_VERSION=%DATE%%HH%%MM%%SS%>> %GITHUB_ENV%
         
     - name: Create Release
       id: create_release
