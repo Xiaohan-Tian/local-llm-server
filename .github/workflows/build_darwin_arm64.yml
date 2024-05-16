@@ -29,7 +29,7 @@ jobs:
       run: pyinstaller app.spec
 
     - name: Zip the build
-      run: zip -r ./LLS-mac-arm64-cuda-$(cat ./version.txt).zip ./dist/app/
+      run: zip -r ./LLS-darwin-arm64-$(cat ./version.txt).zip ./dist/app/
 
     - name: Read version from file
       id: version
