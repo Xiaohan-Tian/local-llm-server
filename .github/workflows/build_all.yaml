@@ -44,10 +44,6 @@ jobs:
         name: macos-arm64-build
         path: ./LLS-darwin-arm64-${{ env.VERSION }}.zip
 
-    - name: Generate tag name
-      run: |
-        echo "TAG_VERSION=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
-
   build-windows-cpu:
     runs-on: windows-latest
     needs: build-macos-arm64
@@ -96,6 +92,23 @@ jobs:
     needs: [build-windows-cpu, build-windows-cpu]
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        # lfs: true
+        token: ${{ secrets.LLS_CICD }}
+
+    - name: Read version from file
+      id: version
+      run: |
+        echo "VERSION=$(cat ./version.txt)" >> $GITHUB_ENV
+        echo "VERSION is ${{ env.VERSION }}"
+
+    - name: Generate tag name
+      run: |
+        echo "TAG_VERSION=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+        echo "TAG_VERSION is ${{ env.TAG_VERSION }}"
+
     - name: Download macOS Build
       uses: actions/download-artifact@v3
       with:
