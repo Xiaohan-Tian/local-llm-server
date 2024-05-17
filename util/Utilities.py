@@ -88,3 +88,21 @@ def convert_path(my_path):
     absolute_path = os.path.abspath(normalized_path)
 
     return absolute_path
+
+def load_file_content(file_path):
+    """
+    Load the content of a file if the file_path is not empty or null and the file exists.
+    
+    :param file_path: The path to the file to be loaded
+    :return: The content of the file, or a message indicating the file does not exist
+    """
+    if file_path:
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as file:
+                content = file.read()
+            return content
+        else:
+            return ""
+    else:
+        return ""
+

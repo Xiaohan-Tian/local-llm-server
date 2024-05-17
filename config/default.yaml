@@ -34,6 +34,8 @@ model_config:
   assistant_prompt_end_token: '<|eot_id|>'
   assistant_followup_prompt_start_token: ''
   assistant_followup_prompt_end_token: '<|eot_id|>'
+  system_prompt_template: ''
+  user_prompt_template: ''
   end_tokens:
   - '<|eot_id|>'
   verbose: true

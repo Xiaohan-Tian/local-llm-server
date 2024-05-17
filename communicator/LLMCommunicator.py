@@ -3,7 +3,7 @@ import threading
 from llama_cpp import Llama
 
 from util.ConfigLoader import ConfigLoader
-from util.Utilities import detect_os, convert_path
+from util.Utilities import detect_os, convert_path, load_file_content
 from loader.HFLoader import load_model
 
 class LLMCommunicator:
@@ -78,6 +78,20 @@ class LLMCommunicator:
             print(f"end_tokens                                = {self.end_tokens}")
         
         self._llm = None
+
+        # load templates
+        self._sys_template = None
+        self._user_template = None
+
+        if bool(model_config["system_prompt_template"]):
+            self._sys_template = load_file_content(model_config["system_prompt_template"])
+
+        if bool(model_config["user_prompt_template"]):
+            self._user_template = load_file_content(model_config["user_prompt_template"])
+
+        if self._debug_mode:
+            print(f"sys_template \t\t = {self._sys_template}")
+            print(f"user_template \t\t = {self._user_template}")
 
     def load_model(self):
         self._llm = Llama(
@@ -157,10 +171,16 @@ class LLMCommunicator:
         current_content = current_message.get('content', '').strip()
         
         if self.system_prompt and current_role != "system":
-            messages.insert(0, {
-                "role": "system", 
-                "content": ""
-            })
+            if self._sys_template is None:
+                messages.insert(0, {
+                    "role": "system", 
+                    "content": ""
+                })
+            else:
+                messages.insert(0, {
+                    "role": "system", 
+                    "content": self._sys_template
+                })
             
         # print(messages)
         
@@ -182,7 +202,10 @@ class LLMCommunicator:
                 # print(f"(seen: system) prompt = {prompt}")
             elif current_role == 'user':
                 if is_first_user_prompt:
-                    prompt += f"{self.user_prompt_start_token}{current_content}{self.user_prompt_end_token}"
+                    if self._user_template is None:
+                        prompt += f"{self.user_prompt_start_token}{current_content}{self.user_prompt_end_token}"
+                    else:
+                        prompt += f"{self.user_prompt_start_token}{self._user_template.replace('{prompt}', current_content)}{self.user_prompt_end_token}"
                     is_first_user_prompt = False
                 else:
                     prompt += f"{self.user_followup_prompt_start_token}{current_content}{self.user_followup_prompt_end_token}"
