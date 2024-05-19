@@ -6,6 +6,7 @@ import argparse
 import threading
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from util.ConfigLoader import ConfigLoader
 from util.Loggers import print_centered
@@ -46,6 +47,15 @@ def start_server():
     app = FastAPI()
     app.include_router(route_hi_router, prefix=config['url_prefix'])
     app.include_router(route_completions_router, prefix=config['url_prefix'])
+
+    if config['allow_cors']:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],  # Allows all origins
+            allow_credentials=True,  # Allow cookies to be included in requests
+            allow_methods=["*"],  # Allow all methods
+            allow_headers=["*"],  # Allow all headers
+        )
     
     if main_lock.locked():
         main_lock.release()
@@ -70,6 +80,7 @@ if __name__ == '__main__':
     parser.add_argument('--host', required=False, help='The host which the server should use')
     parser.add_argument('--port', required=False, type=int, help='The port which the server should listen to')
     parser.add_argument('--use_gpu', required=False, type=int, help='Should use GPU')
+    parser.add_argument('--allow_cors', required=False, type=int, help='Allow CORS')
     
     parser.add_argument('--chatbot', required=False, type=int, help='Enable CLI Chatbot')
     parser.add_argument('--multiline', required=False, type=int, help='Allow multi-line input for commandline chatbot')
@@ -92,6 +103,9 @@ if __name__ == '__main__':
 
     if args.use_gpu is not None:
         config['use_gpu'] = (True if args.use_gpu == 1 else False)
+
+    if args.allow_cors is not None:
+        config['allow_cors'] = (True if args.allow_cors == 1 else False)
         
     if args.chatbot is not None:
         config['chatbot'] = (True if args.chatbot == 1 else False)
