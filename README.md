@@ -22,7 +22,9 @@ We provide you pre-compiled version of Windows with CUDA devices, Windows with C
 Please download the latest build for Windows from the [**Release Page**](https://github.com/Xiaohan-Tian/local-llm-server/releases), we provide you two versions:
 - CUDA version (require NVIDIA Driver with CUDA >= 12.2 installed): `LLS-win-x64-cuda-{version}.zip`. If you want to check the CUDA version, please refer to the "Common Questions" section of this page.
 - CPU version: `LLS-win-x64-{version}.zip`.
-- Note: we plan to support AMD ROCm in the future releases, right now it is possible to use ROCm if you install from the source code, please see "Installation (From the source code)" section for more details.
+- Note:
+    1. we plan to support AMD ROCm in the future releases, right now it is possible to use ROCm if you install from the source code, please see "Installation (From the source code)" section for more details.
+    2. Windows users may **encounter alerts from Windows Defender and `LLS.exe` will be removed** after that, this is due to the PyInstaller bootloader code is being identified false-positively by Windows Defender. To resolve this issue, you can put the container folder into the exclusion of Windows Defender, or download the source and setup the development environment to execute it (Please see the "Installation from the source code" section for more details).
 
 Once you downloaded the zip file, please unzip it into an empty folder, double click the `LLS.exe` icon will start the application.
 
